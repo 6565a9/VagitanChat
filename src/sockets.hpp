@@ -10,10 +10,11 @@
 
 #include<iostream>
 
-#define SIZEBUF 1024
 
 
 namespace Sockets{
+	constexpr unsigned int sizebuf = 1024;
+	constexpr unsigned int maxsize = sizebuf*2;
 	int socket(int domain=AF_INET, int type=SOCK_STREAM, int protocol=0);
 	int connect(int fd, const char * addr, unsigned int port, short unsigned int domain=AF_INET);
 	int bind(int fd, const char * addr="localhost", unsigned int port=0, short unsigned int domain=AF_INET);

@@ -27,16 +27,16 @@ namespace Sockets{
 			return tmp;			
 	}
 
-	std::string read_sock(int fd){
-		char buf[SIZEBUF];
+	std::string read_sock(int fd, int max_size=maxsize){
+		char buf[sizebuf];
 		std::string ret;
 		int n;
 		do{
-			n = read(fd, buf, SIZEBUF);
+			n = read(fd, buf, sizebuf);
 			if(buf[0] == 0) throw( std::runtime_error("closed connection") );
 			ret.append(buf);
-			bzero(buf, SIZEBUF);
-		}while( n == SIZEBUF );
+			bzero(buf, sizebuf);
+		}while( n == sizebuf && ret.size() < max_size );
 		return ret;
 	}
 
