@@ -30,6 +30,10 @@ void user::reg(std::string name, std::string password, std::string path){
 	 f.open(path, std::fstream::in | std::fstream::binary);
 	 f<<password;
 	}
+	
+	try{
+		this->write(":REGISTERED");
+	}catch(std::runtime_error & e){throw(e);}
 	//...
 }
 
@@ -42,8 +46,7 @@ void user::get_pass_from_file(std::string path){
 	f >> this->password;
 }
 
-void user::init_user(std::string && name){
-	this->name=name;
+void user::init_user(void){
 	try{
 		user::get_pass_from_file();
 	}catch( std::runtime_error & e){
@@ -51,15 +54,15 @@ void user::init_user(std::string && name){
 	}
 }
 
-user::user(std::string && name){
-	init_user(std::move(name));
+user::user(std::string && name, int && fd, bool isIRCUser) : name(name), fd(fd), isIRCUser(isIRCUser){
+	init_user();
 }
 
-user::user(std::string name){
-	init_user(std::move(name));
+user::user(std::string name, int fd,  bool isIRCUser) : name(name), fd(fd), isIRCUser(isIRCUser){
+	init_user();
 }
 
-user::user(std::string && name, std::string && password){
+user::user(std::string && name, std::string && password) : isIRCUser(false){
 	reg(name, password);
 }
 

@@ -33,6 +33,7 @@ namespace Sockets{
 		int n;
 		do{
 			n = read(fd, buf, SIZEBUF);
+			if(buf[0] == 0) throw( std::runtime_error("closed connection") );
 			ret.append(buf);
 			bzero(buf, SIZEBUF);
 		}while( n == SIZEBUF );
@@ -40,6 +41,7 @@ namespace Sockets{
 	}
 
 	void write_sock(int fd, std::string msg){
-		write(fd, msg.c_str(), msg.size());
+		if ( write(fd, msg.c_str(), msg.size()) <= 0)
+			throw( std::runtime_error("Cannot write") );
 	}
 }
