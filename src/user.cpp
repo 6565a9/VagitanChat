@@ -1,11 +1,11 @@
 #include"user.hpp"
 #include"util.hpp"
 void user::init_dir_ifnexists( std::string path ) noexcept{
-			DIR* dir = opendir( path.c_str() );
-			if(!dir){ 
-				mkdir(path.c_str(), 0777);
-				closedir(dir); 
-	          		}
+	DIR* dir = opendir( path.c_str() );
+	if(!dir){ 
+		mkdir(path.c_str(), 0777);
+		closedir(dir); 
+	}
 }
 
 bool user::user_exists(std::string name, std::string path) noexcept{
