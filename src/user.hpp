@@ -23,6 +23,7 @@ class user{
 		user(std::string && name);
 		user(std::string name);
 		user(std::string && name, std::string && password);
+		user()=default;
 		std::string & getName(void) noexcept{return name;}
 		bool checkpass(std::string) noexcept;
 		virtual bool connecting(void)=0;

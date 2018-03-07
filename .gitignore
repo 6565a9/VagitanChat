@@ -1,3 +1,5 @@
 autom4te.cache
 Makefile.in
 Makefile
+src/*.o
+src/.deps/*
