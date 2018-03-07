@@ -5,6 +5,7 @@ class chat : room{
 				std::vector<room> rooms;
 	public:
 			void writeMessage(user from, user to);
-			void leave(user u, room chat);
-			void join(user u, room chat);
+			void writeToChat(room chat, user from, std::string msg) noexcept;
+			void leave(user u, room chat) noexcept;
+			void join(user u, room chat) noexcept;
 };

@@ -17,6 +17,9 @@ class room : public user{
 		std::map<std::string, user> users;
 		std::string name;
 	public:
+		std::string & getName(void) noexcept{
+			return name;
+		}
 		room(void)=default;
 		room(std::string name) : name(name){}
 		bool addUser(user && u) noexcept;

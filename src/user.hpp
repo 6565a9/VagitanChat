@@ -35,9 +35,11 @@ class user{
 		user()=default;
 		std::string & getName(void) noexcept{return name;}
 		bool checkpass(std::string) noexcept;
+		
 		void write(std::string msg){
 			Sockets::write_sock(this->fd, msg);
 		}
+		
 		std::string read(){
 			try{
 				return Sockets::read_sock(this->fd);
