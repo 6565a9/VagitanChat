@@ -1,7 +1,7 @@
 #include"sockets.hpp"
 
 namespace Sockets{
-	int socket(int domain, int type, int protocol){
+	int socket_create(int domain, int type, int protocol){
 		return socket(domain, type, protocol);
 	}
 
@@ -20,7 +20,7 @@ namespace Sockets{
 			struct sockaddr_in adr = { domain, htons(port) };
 			adr.sin_addr.s_addr = inet_addr(addr);
 			int tmp = bind(fd, (const sockaddr*)&adr, sizeof(adr));
-			if(tmp <= 0) 
+			if(tmp < 0) 
 				throw ( 
 					std::runtime_error( "Cannot bind " + std::string(addr)  )
  				);

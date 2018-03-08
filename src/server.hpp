@@ -1,97 +1,16 @@
 #include"chat.hpp"
 #include"sockets.hpp"
+#include<thread>
 
 class Server : public chat{
 	private:
 		bool connecting(void) override;
+		int fd;
+		unsigned long maxConnections;
+		std::vector<std::string> connected;
 	protected:
 		
 	public:
-		Server(const char * host, unsigned int port);
-		Server(void);
+		Server(const char * host, unsigned int port, unsigned long MaxConnections=30);
+		Server(void) = delete;
 };
-/*
- *Sammael, [:29]
-нужно думать протокол
-
-Sammael, [:29]
-свой собственный
-
-Sammael, [:29]
-чел коннектица
-
-Sammael, [:29]
-что бы различить его от IRC
-
-Sammael, [:30]
-:USER Nick Pass
-:REG Nick Pass
-
-Sammael, [:30]
-один минус, кстати по поводу регистрации, могут засрать регистрацией сервер
-
-...
-Sammael, [:31]
-если он введет NICK или USER просто, то он явно пришёл из IRC мира
-
-Sammael, [:33]
-но это щас не важно, щас у меня вылетил такой вопрос, ведь засрут блять регистрацией, а идея в том, что бы не было никакого host, никакого realname, только ник, для IRC пользователей обязательно зарегаться через бота, а так все остольное будет игнорироваться от них.
-
-Sammael, [:33]
-Но вот тут вопрос вылетает, блять хранить в файлах тупо хэши это пиздец
-
-Sammael, [:33]
-засрут папку этими хэшами
-
-Sammael, [:33]
-хоть оно и будет весить
-
-Sammael, [:34]
-SHA256_DIGEST_LENGTH вроде 32 байт
-
-Sammael, [:34]
-каждая регистрация весит 32 байта
-
-Sammael, [:34]
-ты понимаешь весь пиздец?
-
-Sammael, [:35]
-32kb будет после 1024 регистраций! А после 1048576 РЕГИСТРАЦИЙ, ТАК ВООБЩЕ блять ужас то какой:(
-
-Sammael, [:35]
-32 мб
-
-Sammael, [:35]
-мог не правильно посчитать
-
-Sammael, [:42]
-...
-<Frozovich> хм использовать sqlite, или же сжимать тупа файлы, НО, сжимая, сжимая да, сжимая блять, будет нагрузка
-...
-<Frozovich> то есть допустим в секунду происходит 10 регистраций
-...
-<Frozovich> 10 РЕГИСТРАЦИЙ В СЕКУНДУ ПРИКИНЬ ЧО БУДЕТ?
-<Frozovich> через 60 секунд то
-<Frozovich> 19200 ФАЙЛОВ
-<Frozovich> ой
-<Frozovich> файлов, БАЙТОВ
-<Frozovich> 18 KB В СЕКУНДУ БЛЯТЬ
-...
-<Frozovich> через 1 час будет 1080 KB
-<unknown542a1> ну ладно .... давано хотел покурить и ... ть
-...
-<Frozovich> ты понимаешь, какой это потенциальный пиздец вообще системе блять
-...
-<Frozovich> это тебе не на ядерные ракеты пароль ставить 8 нулей!
-<anooon> ну кэша куча? так?
-<Frozovich> это ещё опаснее
-<Frozovich> anooon, файлов с хэшем
-<Frozovich> чел засрет регистрацией и пиздец
-<Frozovich> нужно чото с этим думать
-<Frozovich> оОоооо
-...
-<Frozovich> он должен просидеть N времени, что бы файл не удалился и N подключений максимум с одного адресса 
-<Frozovich> всё
-<Frozovich> заебись
-<unknown542a1> no it's really easy to pizdet
-*/

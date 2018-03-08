@@ -3,3 +3,4 @@ Makefile.in
 Makefile
 src/*.o
 src/.deps/*
+src/VagitanChatServer

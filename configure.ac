@@ -8,7 +8,7 @@ AC_CONFIG_FILES([
 #AC_SEARCH_LIBS([lcrypto])
 #AC_CHECK_LIBS([lcrypto])
 AC_CONFIG_SRCDIR([src/vagitanchat.cpp])
-PKG_CHECK_MODULES([libssl], [libssl])
+PKG_CHECK_MODULES([libssl], [libssl], [pthread], [libpthread])
 AM_INIT_AUTOMAKE
 AC_OUTPUT
 
