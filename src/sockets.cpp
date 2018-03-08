@@ -27,7 +27,7 @@ namespace Sockets{
 			return tmp;			
 	}
 
-	std::string read_sock(int fd, int max_size=maxsize){
+	std::string read_sock(int fd, int max_size){
 		char buf[sizebuf];
 		std::string ret;
 		int n;

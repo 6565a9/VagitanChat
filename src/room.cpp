@@ -16,6 +16,7 @@ bool room::removeUser(std::string name) noexcept{
 	if(!userExists(name)) return false;
 	write_to_all(":REMOVED "+users[name].getName()+" "+std::string(this->name));
 	users.erase( name );
+
 	return true;
 }
 

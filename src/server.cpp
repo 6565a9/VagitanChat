@@ -10,19 +10,30 @@ bool Server::connecting(void) {
 		int user = accept(this->fd, (sockaddr*)&addr, &c_len);
 		std::string ip = inet_ntoa(addr.sin_addr);
 		std::cout << "connected from " << ip << std::endl;
-		Sockets::write_sock(user, "Welcome\n");
+
+		std::string msg = Sockets::read_sock(user);
+				
+			
+		Sockets::write_sock(user, ":Welcome\n");
+		
 		close(user);
 	}
 }
 
+Server::~Server(){
+	if(this->fd)
+		close(this->fd);
+}
+
 Server::Server(const char * host, unsigned int port, unsigned long maxConnections)
 		: maxConnections(maxConnections){
+
 	try{
 		fd =Sockets::socket_create();
 
 		Sockets::bind(fd,host, port);
 		listen(fd, maxConnections);
-		std::cout << "start thread for listenig" << std::endl;
+		std::cout << "start thread for listening" << std::endl;
 
 		std::thread(&Server::connecting, this).join();
 		

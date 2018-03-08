@@ -1,3 +1,4 @@
+#pragma once
 #include"sockets.hpp"
 #include <fstream> 
 #include <dirent.h>

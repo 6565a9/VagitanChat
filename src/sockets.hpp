@@ -20,5 +20,5 @@ namespace Sockets{
 	int bind(int fd, const char * addr="localhost", unsigned int port=0, short unsigned int domain=AF_INET);
 	
 	void write_sock(int fd, std::string msg);
-	std::string read_sock(int fd);
+	std::string read_sock(int fd, int max_size=maxsize);
 }
