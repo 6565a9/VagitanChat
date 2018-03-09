@@ -3,13 +3,19 @@
 #include"sockets.hpp"
 #include<thread>
 
+constexpr unsigned int maxForPeer=3;
+
 class Server : public chat{
 	private:
-		bool connecting(void) override;
 		int fd;
 		unsigned long maxConnections;
+	private:
+		bool connecting(void) override;
+		void client_thread(int fd);
+	private:
 		std::vector<std::string> connected;
-		
+		std::vector<std::thread> threads;
+
 	protected:
 		
 	public:

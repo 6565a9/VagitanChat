@@ -1,5 +1,6 @@
 #include"user.hpp"
 #include"util.hpp"
+
 void user::init_dir_ifnexists( std::string path ) noexcept{
 	DIR* dir = opendir( path.c_str() );
 	if(!dir){ 
@@ -9,25 +10,31 @@ void user::init_dir_ifnexists( std::string path ) noexcept{
 }
 
 bool user::user_exists(std::string name, std::string path) noexcept{
-	bool exists=false;
+	bool exists=true;
 
 	try{
 		user::get_pass_from_file();
 	}catch(...){
-		exists=true;
+		exists=false;
 	}
 
 	return exists;
 }
 
 void user::reg(std::string name, std::string password, std::string path){
+	this->name=name;
 
 	if( user_exists(name, path) ) throw( user_errors::registered );
-	this->password = crypto::sha256( std::move(password), name);
-
+	if(name.size() < 4) throw( user_errors::smallname );
+	crypto::sha256( password, name);
+	//std::cout << "Now password " << password;
 	{
 	 std::fstream f;
-	 f.open(path, std::fstream::in | std::fstream::binary);
+       f.open(path+name+".pas", std::fstream::out | std::fstream::binary);
+
+	 if(!f.is_open()) {
+		throw ( std::runtime_error("Cannot register, cannot create file") );
+	 }
 	 f<<password;
 	}
 	
@@ -38,12 +45,20 @@ void user::reg(std::string name, std::string password, std::string path){
 }
 
 void user::get_pass_from_file(std::string path){
+
+
 	init_dir_ifnexists(path);
-	std::fstream f;
-	if(!f.is_open()) 
+	//std::cout << path+name+".pas" << std::endl;
+	std::ifstream f(path+name+".pas", std::ios::binary );
+	
+	if( !f.is_open() ) {
+		std::cout << "File not opened" << std::endl;
 		throw( user_errors::not_registered );
-	f.open(path+name+".pas", std::fstream::out | std::fstream::binary);
-	f >> this->password;
+	}
+	password="";
+	std::string s;
+	while( f >> s )		password=password+s;
+	
 }
 
 void user::init_user(void){
@@ -69,7 +84,23 @@ user::user(std::string && name, std::string && password) : isIRCUser(false){
 
 
 
+
 bool user::checkpass(std::string pass) noexcept{
+	/*
+	std::cout << pass << std::endl;
+	std::cout << "\n~~~~~~~~~~~~~~~~~~~~~~~";
+	std::cout << password << std::endl;
+	char * tmp, *tmp1;
+	tmp = (char*)pass.c_str();
+	tmp1 = (char*)password.c_str();
+	while(*tmp && *tmp1){
+		if(*tmp != *tmp1){
+			std::cout << int(*tmp) << "!=" << int(*tmp1) << std::endl;
+		}
+		tmp++;
+		tmp1++;
+	}
+	*/
 	if(pass.size() == 0) return false;
 	else if(password != pass) return false;
 	return true;

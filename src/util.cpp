@@ -14,7 +14,32 @@ namespace crypto{
 			if(!SHA256_Update(&context, (unsigned char*)input.c_str(), input.size() )) 
 				throw( std::runtime_error("sha256_openssl update error"));
 			 if(!SHA256_Final(md_, &context))
-        			throw( std::runtime_error("sha256_openssl final error"));			
+        			throw( std::runtime_error("sha256_openssl final error"));
+
+                                    std::ostringstream ret;
+                                    for (size_t i = 0; i < SHA256_DIGEST_LENGTH; ++i)
+                                                ret << std::hex << std::setfill('0') << std::setw(2) << std::uppercase << int(md_[i]);
+                                    
+                                    input = ret.str();
 		}
-                        
+}
+
+namespace Text{
+                        void deleteChar(char * t, const char ch, const char cht){
+                                    while(*t){
+                                           if(*t == ch)
+                                                *t=cht;
+                                           *(t++);
+                                    }
+                        }
+                        std::vector<std::string> split(std::string text, const char dim){
+                                    deleteChar((char *)text.c_str());
+                                    std::vector<std::string> strings;
+                                    std::istringstream msg(text);
+                                    std::string tmp;		
+                                    while (getline(msg, tmp, dim)) {
+                                    	strings.push_back(tmp);
+                                    }
+                                    return std::move(strings);
+                        }
 }

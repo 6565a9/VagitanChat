@@ -1,3 +1,4 @@
+#pragma once
 #include"room.hpp"
 class chat : room{
 	protected:

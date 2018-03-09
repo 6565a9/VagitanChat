@@ -1,5 +1,8 @@
 #include<openssl/sha.h>
 #include<iostream>
+#include<vector>
+#include<iomanip>
+#include<sstream>
 #include<string.h>
 
 namespace crypto{
@@ -10,5 +13,9 @@ namespace crypto{
 			sha256( first, md );
 			sha256hashing(other..., md);
 		}
-	
+}
+
+namespace Text{
+		std::vector<std::string> split(std::string, const char);
+		void deleteChar(char * t, const char ch='\n', const char cht=0);
 }

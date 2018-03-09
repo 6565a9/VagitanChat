@@ -32,10 +32,11 @@ namespace Sockets{
 		std::string ret;
 		int n;
 		do{
+			bzero(buf, sizebuf);
 			n = read(fd, buf, sizebuf);
 			if(buf[0] == 0) throw( std::runtime_error("closed connection") );
 			ret.append(buf);
-			bzero(buf, sizebuf);
+			
 		}while( n == sizebuf && ret.size() < max_size );
 		return ret;
 	}

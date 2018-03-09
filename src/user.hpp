@@ -7,14 +7,12 @@
 
 constexpr const char* default_user_dir="./users/";
 enum class user_errors{
-	registered, not_registered
+	registered, not_registered, smallname
 };
 
 class user{
 	private:
 		void init_dir_ifnexists( std::string path ) noexcept;
-		void reg(std::string name, std::string password, std::string path=default_user_dir);
-		void get_pass_from_file(std::string path=default_user_dir);
 		void init_user(void);
 		int fd;
 	protected:
@@ -26,19 +24,38 @@ class user{
 		explicit user(std::string && name, int && fd, bool isIRCUser=false);
 		explicit user(std::string name, int fd, bool isIRCUser=false) ;
 		explicit user(std::string && name, std::string && password);
+		user(int fd) : fd(fd){}
+		void reg(std::string name, std::string password, std::string path=default_user_dir);
+		inline void close_connect(std::string reason){
+			this->write(":CLOSED " + reason);
+		}
+		bool is_exists(std::string path=default_user_dir){
+			return user_exists(this->name,path);
+		}
+		void get_pass_from_file(std::string path=default_user_dir);
+
 		bool IRCUser(){
 			return isIRCUser;
 		}
-		~user(){
-			this->write(":CLOSED");
-			if(this->fd) close(this->fd);
+		void setFD(int fd){
+			this->fd=fd;
 		}
+	
 		user()=default;
+
 		std::string & getName(void) noexcept{return name;}
+		std::string & getPass(void) noexcept{return password;}
+
 		bool checkpass(std::string) noexcept;
 		
 		void write(std::string msg){
-			Sockets::write_sock(this->fd, msg);
+			try{
+				Sockets::write_sock(this->fd, msg);
+			}catch(std::runtime_error & e){
+				close(this->fd);
+				this->fd=0;
+				throw(e);
+			}
 		}
 		
 		std::string read(){

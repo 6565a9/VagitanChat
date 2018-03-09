@@ -1,21 +1,22 @@
-#include"chat.hpp"
-#include <functional>
-#include<sstream>
 
-#define ClientFuncContext user u, std::stringstream && stream
-#define RoomFuncContext room r, user u, std::stringstream && stream
+ 
+/*
+#define COMMAND_ANYC(TEXT,FUNC,WHAT)\
+	{TEXT, [this](WHAT){return this->FUNC(u, std::move(stream) ) ;}}
 
-#define COMMAND_ANY(TEXT,FUNC,WHAT)\
-	{TEXT, [this](WHAT){this->FUNC(u, std::move(stream) ) ;}}
+#define COMMAND_ANYR(TEXT,FUNC,WHAT)\
+	{TEXT, [this](WHAT){return this->FUNC(r, u, std::move(stream) ) ;}}
 
-#define COMMAND_ROOM(TEXT, FUNC) COMMAND_ANY(TEXT,FUNC, RoomFuncContext)
 
-#define COMMAND(TEXT, FUNC) COMMAND_ANY(TEXT,FUNC, ClientFuncContext)
+#define COMMAND_ROOM(TEXT, FUNC) COMMAND_ANYR(TEXT,FUNC, RoomFuncContext)
 
-using ClientFuncPtr = void (*)(ClientFuncContext);
-using ClientFunc = void (ClientFuncContext);
+#define COMMAND(TEXT, FUNC) COMMAND_ANYC(TEXT,FUNC, ClientFuncContext)
+*/
+
 
 class Client{
+
 	public:
-		std::map<std::string, std::function<ClientFunc> > functions;
+
 };
+

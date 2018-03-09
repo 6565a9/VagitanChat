@@ -23,7 +23,7 @@ bool room::removeUser(std::string name) noexcept{
 bool room::userExists(std::string name) noexcept{
 //	for(auto u : this->users){if(u.first == name) return true;}
 	try{
-		users["name"];
+		users.at(name);
 	}catch(std::out_of_range & e){
 		return false;
 	}

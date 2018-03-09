@@ -1,4 +1,18 @@
 #include"server.hpp"
+#include"util.hpp"
+#include"NativeClient.hpp"
+
+void Server::client_thread(int fd){
+		NativeClient nc;
+		//std::cout << msg << " native command try" << std::endl;
+		//bool r = nc.Command({std::move(msg),{fd}});
+		
+		//if(!r && NotNative);// TODO: try IRC
+		bool r = nc.try_connect(fd);
+		close(fd);
+
+}
+
 
 bool Server::connecting(void) {
 	while(1){
@@ -9,14 +23,19 @@ bool Server::connecting(void) {
 
 		int user = accept(this->fd, (sockaddr*)&addr, &c_len);
 		std::string ip = inet_ntoa(addr.sin_addr);
+		unsigned int c =0 ;
 		std::cout << "connected from " << ip << std::endl;
-
-		std::string msg = Sockets::read_sock(user);
-				
-			
-		Sockets::write_sock(user, ":Welcome\n");
 		
-		close(user);
+		for(auto a : connected)
+			if(a == ip) c++;
+		if(c >= maxForPeer){
+				Sockets::write_sock(user,":ERROR MAX CONNECTIONS\n");
+				close(user);
+				continue;
+		}
+		threads.push_back( std::thread(&Server::client_thread, this, user) );
+		//std::cout << "\nThread" <<std::endl;
+		//Sockets::write_sock(user, ":Welcome\n");
 	}
 }
 
