@@ -6,6 +6,7 @@
 bool NativeClient::User(ClientFuncContext) noexcept{
 	try{
 		if( NotEnought(3, stream.size(), u ) ) return false;
+		if( !Text::correct_name(stream[1].c_str()) ) return false;
 		u.getName() = stream[1];
 		if(!u.is_exists()){
 			u.write(":ERROR not registered");
@@ -37,6 +38,7 @@ bool NativeClient::User(ClientFuncContext) noexcept{
 bool NativeClient::Register(ClientFuncContext) noexcept{
 	try{
 		if( NotEnought(3, stream.size(), u ) ) return false;
+		if( !Text::correct_name(stream[1].c_str()) ) return false;
 		try{
 			u.reg(stream[1], stream[2]);
 			logined=true;
@@ -105,6 +107,8 @@ bool NativeClient::Privmsg ( ClientFuncContext ) noexcept{
 bool NativeClient::JoinToRoom( ClientFuncContext ) noexcept{
 	if(!logined) return false;
 	if( stream.size() < 2 ) return false;
+	if( !Text::correct_name(stream[1].c_str()) ) return false;
+
 	for(auto & room : rooms_r)
 			if(room.getName() == stream[1]){
 				room.addUser(u);
@@ -122,6 +126,8 @@ bool NativeClient::JoinToRoom( ClientFuncContext ) noexcept{
 bool NativeClient::LeaveFromRoom( ClientFuncContext ) noexcept{
 	if(!logined) return false;
 	if( stream.size() < 2 ) return false;
+	if( !Text::correct_name(stream[1].c_str()) ) return false;
+
 	for(auto & room : rooms_r)
 			if(room.getName() == stream[1]){
 				if(!room.removeUser(u.getName())){

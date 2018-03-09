@@ -6,8 +6,13 @@
 
 
 constexpr const char* default_user_dir="./users/";
+
+constexpr std::size_t minsizename = 4;
+constexpr std::size_t maxnamesize = 28;
+
+
 enum class user_errors{
-	registered, not_registered, smallname
+	registered, not_registered, smallname, bigname
 };
 
 class user{

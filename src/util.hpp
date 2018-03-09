@@ -1,3 +1,4 @@
+#pragma once
 #include<openssl/sha.h>
 #include<iostream>
 #include<vector>
@@ -18,4 +19,5 @@ namespace crypto{
 namespace Text{
 		std::vector<std::string> split(std::string, const char);
 		void deleteChar(char * t, const char ch='\n', const char cht=0);
+		bool correct_name(const char * buf);
 }

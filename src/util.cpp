@@ -42,4 +42,15 @@ namespace Text{
                                     }
                                     return std::move(strings);
                         }
+                        
+                        bool correct_name(const char * buf){
+                                    while( *buf ){
+                                                if( !(*buf >= 'a' && *buf <= 'z') &&
+				   !(*buf >='1' && *buf <= '9') &&
+					!(*buf >= 'A' && *buf <= 'Z' ) )
+					return false;
+                                                (buf++);
+			}
+			return true;            
+                        }
 }

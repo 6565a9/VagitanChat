@@ -25,7 +25,9 @@ void user::reg(std::string name, std::string password, std::string path){
 	this->name=name;
 
 	if( user_exists(name, path) ) throw( user_errors::registered );
-	if(name.size() < 4) throw( user_errors::smallname );
+	if(name.size() < minsizename) throw( user_errors::smallname );
+	else if(name.size() > maxnamesize) throw( user_errors::bigname );
+
 	crypto::sha256( password, name);
 	//std::cout << "Now password " << password;
 	{

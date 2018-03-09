@@ -41,7 +41,7 @@ bool room::userExists(std::string name) noexcept{
 }
 
 void room::write_to_all(std::string msgNative, std::string msgIRC) noexcept{
-	std::cout << " write for all " << msgNative << std::endl;
+	//std::cout << " write for all " << msgNative << std::endl;
 	for(auto u : this->users){
 		try{
 			if(msgIRC.size() && u.second->IRCUser()){
