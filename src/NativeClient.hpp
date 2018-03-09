@@ -28,6 +28,8 @@ class NativeClient{
 	typedef bool (NativeClient::*ClientFunc )(ClientFuncContext);
 	typedef bool (NativeClient::*RoomFunc)(RoomFuncContext);
 	private:
+		std::vector<room> & rooms_r;
+		std::vector<user> & users_r;
 		bool logined;
 	private:
 		inline bool NotEnought(std::size_t nsize, std::size_t size, user & u ){
@@ -54,12 +56,15 @@ class NativeClient{
 		std::map<std::string, RoomFunc > functions_room;
 	private:
 	public:
-		virtual bool try_connect(int fd);
+		virtual bool try_connect(int fd, std::string);
 		//bool find_command(std::string && command, type_command type);
 		virtual type_command typeOfCommand(std::string command);
 		virtual bool Command(command_container & contain);
+		virtual void erase(int fd){
+			
+		}
 	public:
 		bool NotNative;
 
-		NativeClient(void);
+		NativeClient(std::vector<room> & room, std::vector<user> & user );
 };

@@ -19,7 +19,15 @@ bool NativeClient::User(ClientFuncContext) noexcept{
 			u.write(":ERROR uncorrect password\n");
 			return false;			
 		}
+		
+		for(auto it = std::cbegin(users_r);it!=users_r.cend();it++)
+			if(*it == u){
+				u.write(":ERROR nickname busy\n");
+				return false;
+			}
+			
 		u.write(":WELCOME "+stream[1]+"\n");
+		users_r.push_back(u);
 		logined=true;
 		return true;
 	}catch(...){}
@@ -32,6 +40,7 @@ bool NativeClient::Register(ClientFuncContext) noexcept{
 		try{
 			u.reg(stream[1], stream[2]);
 			logined=true;
+			users_r.push_back(u);
 			return true;
 		}catch(std::runtime_error & e){
 			std::cerr << e.what() << std::endl;
@@ -50,7 +59,31 @@ bool NativeClient::Register(ClientFuncContext) noexcept{
 }
 
 bool NativeClient::Privmsg ( ClientFuncContext ) noexcept{
+	//:RRIVMSG ROOM/USER MSG
+	if(!logined) return false;
+	if( stream.size() < 3 ) return false;
+	std::ostringstream msgs;
+	for(auto it = std::cbegin(stream)+2;it!=stream.cend();it++){
+			std::cout << "add " << *it;
+			msgs << " "<< *it;
+	}
 	
+	if(stream[1].c_str()[0] != '@' ){
+		for(auto usr : users_r)
+			if(usr.getName() == stream[1])
+				try{
+					std::cout << msgs.str() << std::endl;
+					ChatFuncs::writeMessage( u , usr, msgs.str() );
+					return true;
+				}catch(std::runtime_error & e){
+					u.write(std::string(":ERROR ") + e.what());
+				}
+
+		
+		u.write(":ERROR NOT FOUND");
+	}else;
+	return true;
+
 }
 
 bool NativeClient::JoinToRoom( RoomFuncContext ) noexcept{
@@ -83,16 +116,22 @@ type_command NativeClient::typeOfCommand(std::string command){
 	}
 }
 
-bool NativeClient::try_connect(int fd){
+bool NativeClient::try_connect(int fd, std::string msg){
 		room r;
 		user u(fd);
 		bool res;
 		do{
-			std::string msg = Sockets::read_sock(fd);
 			Text::deleteChar((char*)msg.c_str());
-			command_container contain={std::move(msg),u, r};
+			command_container contain={msg,u, r};
 			res = Command(contain);
+			if(res) msg = Sockets::read_sock(fd);
 		}while(res && logined);
+		std::cout << "Start erasing\n";
+		for(auto it = std::cbegin(users_r);it!=users_r.cend();it++)
+			if(*it == u){
+				users_r.erase(it);
+				break;
+			}
 }
 
 bool NativeClient::Command(command_container & contain){
@@ -112,7 +151,10 @@ bool NativeClient::Command(command_container & contain){
 }
 
 
-NativeClient::NativeClient(void){
+NativeClient::NativeClient(std::vector<room> & room, std::vector<user> & user):
+			users_r(user),rooms_r(room)
+
+{
 			functions_client[NativeClient_UserCMD] = &NativeClient::User;
 			functions_client[NativeClient_RegisterCMD] = &NativeClient::Register; 
 			functions_client[NativeClient_PrivmsgCMD] = &NativeClient::Privmsg;

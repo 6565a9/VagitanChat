@@ -3,12 +3,16 @@
 #include"NativeClient.hpp"
 
 void Server::client_thread(int fd){
-		NativeClient nc;
+            
+            NativeClient nc(rooms,users);
+            try{
 		//std::cout << msg << " native command try" << std::endl;
 		//bool r = nc.Command({std::move(msg),{fd}});
-		
+		std::string msg = Sockets::read_sock(fd);
 		//if(!r && NotNative);// TODO: try IRC
-		bool r = nc.try_connect(fd);
+		bool r = nc.try_connect(fd, msg);
+                        
+            }catch(...){}
 		close(fd);
 
 }

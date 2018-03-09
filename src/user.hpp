@@ -21,6 +21,11 @@ class user{
 		bool user_exists(std::string name, std::string path=default_user_dir) noexcept;
 		bool isIRCUser;
 	public:
+		friend bool operator==(const user u1, const user u2){
+			if(u1.fd == u2.fd) return true;
+			else if(u1.name == u2.name) return true;
+			return false;
+		}
 		explicit user(std::string && name, int && fd, bool isIRCUser=false);
 		explicit user(std::string name, int fd, bool isIRCUser=false) ;
 		explicit user(std::string && name, std::string && password);

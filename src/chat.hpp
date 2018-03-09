@@ -6,8 +6,24 @@ class chat : room{
 				std::vector<room> rooms;
 				std::vector<user> users;
 	public:
-			void writeMessage(user from, user to);
-			void writeToChat(room chat, user from, std::string msg) noexcept;
-			void leave(user u, room chat) noexcept;
-			void join(user u, room chat) noexcept;
 };
+
+namespace ChatFuncs{
+	static void writeMessage(user from, user to, std::string msg){
+		try{
+			to.write(":PRIVMSG " + from.getName() + " " + msg);
+			}catch(std::runtime_error & e){throw(e);}
+	}
+	
+	static void writeToChat(room chat, user from, std::string msg) {
+		chat.write_to_all(":PRIVMSG " + chat.getName() + " " + from.getName() + " "+msg);
+	}
+	
+	static void leave(user u, room chat) {
+		chat.removeUser( u.getName() );
+	}
+
+	static void join(user u, room chat) {
+		chat.addUser( std::move(u) );
+	}
+}
