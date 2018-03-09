@@ -102,7 +102,7 @@ bool NativeClient::Privmsg ( ClientFuncContext ) noexcept{
 
 }
 
-bool NativeClient::JoinToRoom( RoomFuncContext ) noexcept{
+bool NativeClient::JoinToRoom( ClientFuncContext ) noexcept{
 	if(!logined) return false;
 	if( stream.size() < 2 ) return false;
 	for(auto & room : rooms_r)
@@ -119,7 +119,7 @@ bool NativeClient::JoinToRoom( RoomFuncContext ) noexcept{
 	return true;
 }
 
-bool NativeClient::LeaveFromRoom( RoomFuncContext ) noexcept{
+bool NativeClient::LeaveFromRoom( ClientFuncContext ) noexcept{
 	if(!logined) return false;
 	if( stream.size() < 2 ) return false;
 	for(auto & room : rooms_r)
@@ -154,7 +154,7 @@ type_command NativeClient::typeOfCommand(std::string command){
 		return type_command::client;
 	}catch(std::out_of_range & e){
 		try{
-			functions_room.at(command);
+			functions_rooms.at(command);
 			return type_command::room;			
 		}catch(std::out_of_range & e){
 			NotNative=true;
@@ -164,12 +164,11 @@ type_command NativeClient::typeOfCommand(std::string command){
 }
 
 bool NativeClient::try_connect(int fd, std::string msg){
-		room r;
 		user u(fd);
 		bool res;
 		do{
 			Text::deleteChar((char*)msg.c_str());
-			command_container contain={msg,u, r};
+			command_container contain={msg,u};
 			res = Command(contain);
 			if(res) msg = Sockets::read_sock(fd);
 		}while(res && logined);
@@ -180,20 +179,12 @@ bool NativeClient::try_connect(int fd, std::string msg){
 			}
 }
 
-bool NativeClient::Command(command_container & contain){
+bool NativeClient::Command(command_container& contain){
 	std::vector<std::string> msgs = Text::split(contain.text, ' ');
 	type_command type = typeOfCommand(msgs[0]);
 	std::cout << "Getted type " << int(type) << std::endl;
 	if(type == type_command::undefined) return false;
-
-	switch(type){
-		case type_command::room:
-			return (this->*(functions_room[msgs[0]])) (contain.r, contain.u, std::move(msgs));
-			break; // not need but let be 
-		case type_command::client:
-			return (this->*(functions_client[msgs[0]])) (contain.u, std::move(msgs));
-			break;
-	}
+	return (this->*(functions_client[msgs[0]])) (contain.u, std::move(msgs));
 }
 
 
@@ -207,7 +198,7 @@ NativeClient::NativeClient(std::vector<room> & room, std::vector<user> & user):
 			functions_client[NativeClient_PingCMD] = &NativeClient::Ping;
 
 			//
-			functions_room[NativeClient_JoinToRoomCMD] = &NativeClient::JoinToRoom;
+			functions_client[NativeClient_JoinToRoomCMD] = &NativeClient::JoinToRoom;
 			
-			functions_room[NativeClient_LeaveFromRoomCMD] = &NativeClient::LeaveFromRoom;
+			functions_client[NativeClient_LeaveFromRoomCMD] = &NativeClient::LeaveFromRoom;
 }
