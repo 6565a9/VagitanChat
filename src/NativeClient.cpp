@@ -8,7 +8,7 @@ bool NativeClient::User(ClientFuncContext) noexcept{
 		if( NotEnought(3, stream.size(), u ) ) return false;
 		u.getName() = stream[1];
 		if(!u.is_exists()){
-			u.write(":ERROR not registered\n");
+			u.write(":ERROR not registered");
 			return false;
 				
 		}
@@ -16,17 +16,17 @@ bool NativeClient::User(ClientFuncContext) noexcept{
 		crypto::sha256(stream[2],stream[1]);
 		//std::string pass = crypto::sha256(std::move(stream[2]), stream[1]);
 		if(!u.checkpass(stream[2])){
-			u.write(":ERROR uncorrect password\n");
+			u.write(":ERROR uncorrect password");
 			return false;			
 		}
 		
 		for(auto it = std::cbegin(users_r);it!=users_r.cend();it++)
 			if(*it == u){
-				u.write(":ERROR nickname busy\n");
+				u.write(":ERROR nickname busy");
 				return false;
 			}
 			
-		u.write(":WELCOME "+stream[1]+"\n");
+		u.write(":WELCOME "+stream[1]);
 		users_r.push_back(u);
 		logined=true;
 		return true;
@@ -81,23 +81,70 @@ bool NativeClient::Privmsg ( ClientFuncContext ) noexcept{
 
 		
 		u.write(":ERROR NOT FOUND");
-	}else;
+	}else{
+		const char * tmp = (stream[1].c_str()+1);
+		for(auto & room : rooms_r){
+			if(strcmp( tmp, room.getName().c_str() ) == 0 )
+			{
+				if( !room.userExists(u.getName()) ){
+					u.write(":ERROR NOT JOINED TO ROOM "+stream[1]);
+					return true;
+				}
+				ChatFuncs::writeToChat(room,u, msgs.str());
+				return true;
+			}
+		}
+		//std::cout << "Not found room\n";
+		u.write(":ERROR NOT FOUND ROOM "+stream[1]);
+
+	}
 	return true;
 
 }
 
 bool NativeClient::JoinToRoom( RoomFuncContext ) noexcept{
-	
+	if(!logined) return false;
+	if( stream.size() < 2 ) return false;
+	for(auto & room : rooms_r)
+			if(room.getName() == stream[1]){
+				room.addUser(u);
+				return true;
+			}
+	//rooms_r.push_back({stream[1]});
+	room rtmp(stream[1]);
+	u.write(":ROOM " +stream[1]+ " CREATED");
+	rtmp.addUser(u);
+	std::cout << "User added\n";
+	rooms_r.push_back(rtmp);
+	return true;
 }
 
 bool NativeClient::LeaveFromRoom( RoomFuncContext ) noexcept{
+	if(!logined) return false;
+	if( stream.size() < 2 ) return false;
+	for(auto & room : rooms_r)
+			if(room.getName() == stream[1]){
+				if(!room.removeUser(u.getName())){
+					u.write(":ERROR NOT JOINED");
+					return true;
+				}
+				if(room.user_count() == 0)
+				 for(auto it = rooms_r.begin();it!=rooms_r.end();it++)
+					if(it->getName() == stream[1]){
+					rooms_r.erase(it);
+					return true;
+				 }
+				return true;
+			}
+	u.write(":ERROR undefined room");
+	return true; // todo
 	
 }
 
 bool NativeClient::Ping( ClientFuncContext ) noexcept{
 	if(!logined) return false;
 	u.write(":WRITEANYATEXT ");
-	u.write("\n"+u.read());
+	u.write(u.read());
 }
 
 //TODO:
@@ -126,7 +173,6 @@ bool NativeClient::try_connect(int fd, std::string msg){
 			res = Command(contain);
 			if(res) msg = Sockets::read_sock(fd);
 		}while(res && logined);
-		std::cout << "Start erasing\n";
 		for(auto it = std::cbegin(users_r);it!=users_r.cend();it++)
 			if(*it == u){
 				users_r.erase(it);

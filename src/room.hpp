@@ -15,7 +15,7 @@ enum class room_types{
 class room : public user{
 	private:
 		//std::vector<std::string> users;
-		std::map<std::string, user> users;
+		std::map<std::string, user*> users;
 		std::string name;
 	public:
 		std::string & getName(void) noexcept{
@@ -23,8 +23,11 @@ class room : public user{
 		}
 		room(void)=default;
 		room(std::string name) : name(name){}
-		bool addUser(user && u) noexcept;
+		bool addUser(user & u) noexcept;
 		bool removeUser(std::string name) noexcept;
 		bool userExists(std::string name) noexcept;
-		void write_to_all(std::string msgNative, std::string msgIRC=nullptr) noexcept;
+		void write_to_all(std::string msgNative, std::string msgIRC="") noexcept;
+		size_t user_count(void){
+			return users.size();
+		}
 };

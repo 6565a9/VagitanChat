@@ -55,7 +55,7 @@ class user{
 		
 		void write(std::string msg){
 			try{
-				Sockets::write_sock(this->fd, msg);
+				Sockets::write_sock(this->fd, msg+"\n");
 			}catch(std::runtime_error & e){
 				close(this->fd);
 				this->fd=0;

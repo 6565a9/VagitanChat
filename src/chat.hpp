@@ -15,15 +15,7 @@ namespace ChatFuncs{
 			}catch(std::runtime_error & e){throw(e);}
 	}
 	
-	static void writeToChat(room chat, user from, std::string msg) {
-		chat.write_to_all(":PRIVMSG " + chat.getName() + " " + from.getName() + " "+msg);
-	}
-	
-	static void leave(user u, room chat) {
-		chat.removeUser( u.getName() );
-	}
-
-	static void join(user u, room chat) {
-		chat.addUser( std::move(u) );
+	static void writeToChat(room chat, user from, std::string msg, std::string ircmsg="") {
+		chat.write_to_all(":PRIVMSG @" + chat.getName() + " " + from.getName() + " "+msg);
 	}
 }
