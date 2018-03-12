@@ -13,6 +13,7 @@ void Server::client_thread(int fd){
 
            		NativeClient nc(rooms,users);
 		nc.try_connect(fd, msg);
+		//TODO:...
 		if(!nc.getLogined() && nc.error_cmd < max_error_cmd){
            			IRCClient IRCc(rooms,users);
                         	IRCc.try_connect(fd,msg);
