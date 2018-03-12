@@ -13,6 +13,7 @@ void Server::client_thread(int fd){
 		bool r = nc.try_connect(fd, msg);
                         
             }catch(...){}
+
 		close(fd);
 
 }

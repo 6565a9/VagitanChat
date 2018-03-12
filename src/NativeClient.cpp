@@ -171,18 +171,14 @@ type_command NativeClient::typeOfCommand(std::string command){
 
 bool NativeClient::try_connect(int fd, std::string msg){
 		user u(fd);
-		bool res;
+
 		do{
 			Text::deleteChar((char*)msg.c_str());
 			command_container contain={msg,u};
-			res = Command(contain);
-			if(res) msg = Sockets::read_sock(fd);
-		}while(res && logined);
-		for(auto it = std::cbegin(users_r);it!=users_r.cend();it++)
-			if(*it == u){
-				users_r.erase(it);
-				break;
-			}
+			if(  !Command(contain) ) break;
+			msg = Sockets::read_sock(fd);
+		}while( logined );
+		Quiting(u);
 }
 
 bool NativeClient::Command(command_container& contain){
@@ -194,6 +190,11 @@ bool NativeClient::Command(command_container& contain){
 }
 
 
+bool NativeClient::Quit( ClientFuncContext ) noexcept{
+	return false;
+}
+
+
 NativeClient::NativeClient(std::vector<room> & room, std::vector<user> & user):
 			users_r(user),rooms_r(room)
 
@@ -202,6 +203,7 @@ NativeClient::NativeClient(std::vector<room> & room, std::vector<user> & user):
 			functions_client[NativeClient_RegisterCMD] = &NativeClient::Register; 
 			functions_client[NativeClient_PrivmsgCMD] = &NativeClient::Privmsg;
 			functions_client[NativeClient_PingCMD] = &NativeClient::Ping;
+			functions_client[NativeClient_Quit] = &NativeClient::Quit;
 
 			//
 			functions_client[NativeClient_JoinToRoomCMD] = &NativeClient::JoinToRoom;

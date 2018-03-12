@@ -12,6 +12,13 @@ constexpr const char NativeClient_PrivmsgCMD[] = ":PRIVMSG";
 constexpr const char NativeClient_JoinToRoomCMD[] = ":JOIN";
 constexpr const char NativeClient_LeaveFromRoomCMD[] = ":LEAVE";
 constexpr const char NativeClient_PingCMD[] = ":PING";
+constexpr const char NativeClient_Quit[] = ":QUIT";
+
+struct{
+	std::vector<user> u{};
+	std::vector<room> r{};
+
+} null_references;
 
 
 struct command_container{
@@ -28,11 +35,11 @@ enum class type_command{
 class NativeClient{
 	typedef bool (NativeClient::*ClientFunc )(ClientFuncContext);
 	//typedef bool (NativeClient::*RoomFunc)(RoomFuncContext);
-	private:
+	protected:
 		std::vector<room> & rooms_r;
 		std::vector<user> & users_r;
 		bool logined;
-	private:
+	protected:
 		inline bool NotEnought(std::size_t nsize, std::size_t size, user & u ){
 			if(nsize > size)
 			{
@@ -44,19 +51,28 @@ class NativeClient{
 			}
 			return false;
 		}
-		bool User( ClientFuncContext ) noexcept;
-		bool Register( ClientFuncContext ) noexcept;
-		bool Privmsg ( ClientFuncContext ) noexcept;
-		bool JoinToRoom( ClientFuncContext ) noexcept;
-		bool LeaveFromRoom( ClientFuncContext ) noexcept;
-		bool Ping( ClientFuncContext ) noexcept;
+		inline void Quiting(user & u){
+			for(auto it = std::cbegin(users_r);it!=users_r.cend();it++)
+			if(*it == u){
+				ChatFuncs::quit(*it, rooms_r);
+				users_r.erase(it);
+				break;
+			}
+		}
+		virtual bool User( ClientFuncContext ) noexcept;
+		virtual bool Register( ClientFuncContext ) noexcept;
+		virtual bool Privmsg ( ClientFuncContext ) noexcept;
+		virtual bool JoinToRoom( ClientFuncContext ) noexcept;
+		virtual bool LeaveFromRoom( ClientFuncContext ) noexcept;
+		virtual bool Ping( ClientFuncContext ) noexcept;
+		virtual bool Quit( ClientFuncContext ) noexcept;
 	
 
 	private:
 		using fnm = std::map<std::string, ClientFunc >;
 		 fnm  functions_client;
 		 fnm functions_rooms;
-	private:
+	protected:
 		decltype(auto) find_room(std::string name){
 			for(auto & room : rooms_r){
 				if(room.getName() == name) return (room);
@@ -68,15 +84,14 @@ class NativeClient{
 			}
 		}
 	public:
-		virtual bool try_connect(int fd, std::string);
+		bool try_connect(int fd, std::string);
 		//bool find_command(std::string && command, type_command type);
 		virtual type_command typeOfCommand(std::string command);
 		virtual bool Command( command_container&  );
-		virtual void erase(int fd){
-			
-		}
+		//virtual void erase(int fd);
 	public:
 		bool NotNative;
-
+		NativeClient():users_r(null_references.u), rooms_r(null_references.r){}
+		//NativeClient(void)=default;
 		NativeClient(std::vector<room> & room, std::vector<user> & user );
 };
