@@ -1,5 +1,6 @@
+#pragma once
 #include"chat.hpp"
-
+#include"util.hpp"
 #include <functional>
 #include<sstream>
 
@@ -14,11 +15,8 @@ constexpr const char NativeClient_LeaveFromRoomCMD[] = ":LEAVE";
 constexpr const char NativeClient_PingCMD[] = ":PING";
 constexpr const char NativeClient_Quit[] = ":QUIT";
 
-struct{
-	std::vector<user> u{};
-	std::vector<room> r{};
+constexpr char max_error_cmd = 3;
 
-} null_references;
 
 
 struct command_container{
@@ -29,8 +27,16 @@ struct command_container{
 
 
 enum class type_command{
-		client, room, undefined
+		client, /*room,*/ undefined
 };
+
+namespace Commands{
+	//TODO:
+	template <typename Obj>
+	type_command typeOfCommand(std::string command, Obj obj);
+	template <typename Obj> 
+	bool Command(command_container & contain, Obj obj);
+}
 
 class NativeClient{
 	typedef bool (NativeClient::*ClientFunc )(ClientFuncContext);
@@ -39,7 +45,15 @@ class NativeClient{
 		std::vector<room> & rooms_r;
 		std::vector<user> & users_r;
 		bool logined;
+
+
 	protected:
+
+		type_command typeOfCommand(std::string command);
+
+
+
+
 		inline bool NotEnought(std::size_t nsize, std::size_t size, user & u ){
 			if(nsize > size)
 			{
@@ -66,12 +80,14 @@ class NativeClient{
 		virtual bool LeaveFromRoom( ClientFuncContext ) noexcept;
 		virtual bool Ping( ClientFuncContext ) noexcept;
 		virtual bool Quit( ClientFuncContext ) noexcept;
-	
-
+	protected:
+		//template <typename Obj>  bool Command(command_container & contain, Obj obj);	
+		//template <typename Obj>  type_command typeOfCommand(std::string command, Obj obj);
+		bool funcExists(std::string);
 	private:
 		using fnm = std::map<std::string, ClientFunc >;
 		 fnm  functions_client;
-		 fnm functions_rooms;
+		 //fnm functions_rooms;
 	protected:
 		decltype(auto) find_room(std::string name){
 			for(auto & room : rooms_r){
@@ -86,12 +102,39 @@ class NativeClient{
 	public:
 		bool try_connect(int fd, std::string);
 		//bool find_command(std::string && command, type_command type);
-		virtual type_command typeOfCommand(std::string command);
 		virtual bool Command( command_container&  );
 		//virtual void erase(int fd);
+
+		bool getLogined(void){
+			return logined;
+		}
+
+		char error_cmd ;
 	public:
-		bool NotNative;
-		NativeClient():users_r(null_references.u), rooms_r(null_references.r){}
+//		bool NotNative;
 		//NativeClient(void)=default;
 		NativeClient(std::vector<room> & room, std::vector<user> & user );
+	public:
+			template <typename Obj, typename Map, typename User> 
+				friend bool Command(Obj obj, Map map, std::string cmd, User u );
+			template <typename Map> bool funcExists(Map map, std::string name){
+				try{
+					map.at(name);
+					return true;
+				}catch(std::out_of_range & e){
+					return false;
+				}
+			}
+
 };
+namespace Commands{
+	template <typename Obj, typename Map> 
+	bool Command(Obj obj, Map map, command_container & contain){
+		std::vector<std::string> msgs = Text::split(contain.text, ' ');
+		if( !obj->funcExists(map, msgs[0]) ) return false;
+		//return (obj->*(obj->functions_client[cmd])) (u, std::move(cmd));
+		return (obj->*(map[ msgs[0] ])) (contain.u, std::move(msgs));		
+	}
+
+}
+

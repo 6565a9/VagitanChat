@@ -45,4 +45,15 @@ namespace Sockets{
 		if ( write(fd, msg.c_str(), msg.size()) <= 0)
 			throw( std::runtime_error("Cannot write") );
 	}
+
+	void set_timeout(int & fd, unsigned int sec, unsigned int ms){
+    		struct timeval timeout = {sec,ms};
+
+    		if (setsockopt (fd, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout)) == -1)
+			throw(std::runtime_error("Can't set setsockopt"));
+
+    		if (setsockopt (fd, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof(timeout)) == -1)
+			throw(std::runtime_error("Can't set setsockopt"));		
+	}
+
 }

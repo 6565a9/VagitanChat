@@ -159,38 +159,48 @@ type_command NativeClient::typeOfCommand(std::string command){
 		functions_client.at(command);
 		return type_command::client;
 	}catch(std::out_of_range & e){
-		try{
-			functions_rooms.at(command);
-			return type_command::room;			
-		}catch(std::out_of_range & e){
-			NotNative=true;
+			//NotNative=true;
 			return type_command::undefined;
-		}
 	}
+}
+
+bool NativeClient::funcExists(std::string func){
+	return	typeOfCommand(func) == type_command::undefined ? false : true;
 }
 
 bool NativeClient::try_connect(int fd, std::string msg){
 		user u(fd);
 
 		do{
-			Text::deleteChar((char*)msg.c_str());
-			command_container contain={msg,u};
-			if(  !Command(contain) ) break;
+			std::vector<std::string> msgs = Text::split(msg, '\n');
+			for(auto m : msgs){
+				const auto starting_without_space = msg.find_first_not_of(' ');
+				if(starting_without_space-msg.find_last_not_of(' ')!=0)
+					msg = msg.substr(starting_without_space, starting_without_space-msg.find_last_not_of(' '));
+			
+				command_container contain={msg,u};
+
+				if(  !Command(contain) || this->error_cmd > max_error_cmd){
+					 if(this->error_cmd > max_error_cmd) 
+						return false;
+					 this->error_cmd++;
+				}else this->error_cmd=0;
+			}
+
 			msg = Sockets::read_sock(fd);
 		}while( logined );
 		Quiting(u);
 }
 
-bool NativeClient::Command(command_container& contain){
-	std::vector<std::string> msgs = Text::split(contain.text, ' ');
-	type_command type = typeOfCommand(msgs[0]);
-	std::cout << "Getted type " << int(type) << std::endl;
-	if(type == type_command::undefined) return false;
-	return (this->*(functions_client[msgs[0]])) (contain.u, std::move(msgs));
+bool NativeClient::Command(command_container & contain){
+		std::cout << "Native FUNC: " << contain.text << std::endl;
+		return Commands::Command(this, functions_client, contain); // TODO:
 }
 
 
 bool NativeClient::Quit( ClientFuncContext ) noexcept{
+	error_cmd=max_error_cmd+1;
+	logined = false;
 	return false;
 }
 

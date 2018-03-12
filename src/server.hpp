@@ -4,6 +4,7 @@
 #include<thread>
 
 constexpr unsigned int maxForPeer=3;
+constexpr unsigned int timeout_sec=60;
 
 class Server : public chat{
 	private:

@@ -4,6 +4,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include<unistd.h>
+#include<time.h>
 
 #include<string.h>
 
@@ -21,4 +22,6 @@ namespace Sockets{
 	
 	void write_sock(int fd, std::string msg);
 	std::string read_sock(int fd, int max_size=maxsize);
+
+	void set_timeout(int & fd, unsigned int sec, unsigned int ms=0);
 }

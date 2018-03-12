@@ -1,17 +1,22 @@
 #include"server.hpp"
 #include"util.hpp"
 #include"NativeClient.hpp"
+#include"IRCClient.hpp"
 
 void Server::client_thread(int fd){
             
-            NativeClient nc(rooms,users);
+
             try{
-		//std::cout << msg << " native command try" << std::endl;
-		//bool r = nc.Command({std::move(msg),{fd}});
+
 		std::string msg = Sockets::read_sock(fd);
-		//if(!r && NotNative);// TODO: try IRC
-		bool r = nc.try_connect(fd, msg);
-                        
+
+
+           		NativeClient nc(rooms,users);
+		nc.try_connect(fd, msg);
+		if(!nc.getLogined() && nc.error_cmd < max_error_cmd){
+           			IRCClient IRCc(rooms,users);
+                        	IRCc.try_connect(fd,msg);
+		}
             }catch(...){}
 
 		close(fd);
@@ -27,6 +32,9 @@ bool Server::connecting(void) {
 		socklen_t c_len = sizeof(addr);
 
 		int user = accept(this->fd, (sockaddr*)&addr, &c_len);
+		Sockets::set_timeout(user,timeout_sec);
+
+
 		std::string ip = inet_ntoa(addr.sin_addr);
 		unsigned int c =0 ;
 		std::cout << "connected from " << ip << std::endl;

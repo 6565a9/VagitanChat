@@ -32,6 +32,8 @@ namespace Text{
                                            *(t++);
                                     }
                         }
+
+
                         std::vector<std::string> split(std::string text, const char dim){
                                     deleteChar((char *)text.c_str());
                                     std::vector<std::string> strings;

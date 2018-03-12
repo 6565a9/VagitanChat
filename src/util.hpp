@@ -6,6 +6,8 @@
 #include<sstream>
 #include<string.h>
 
+
+
 namespace crypto{
 	void sha256(std::string & input, std::string md);
 	std::string sha256(std::string && input, std::string md);
@@ -20,4 +22,7 @@ namespace Text{
 		std::vector<std::string> split(std::string, const char);
 		void deleteChar(char * t, const char ch='\n', const char cht=0);
 		bool correct_name(const char * buf);
+		void deleteStartChar(char * t, const char ch=' ', const char cht=0);
 }
+
+
