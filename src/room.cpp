@@ -50,6 +50,8 @@ void room::write_to_all(std::string msgNative, std::string msgIRC) noexcept{
 			}
 			else
 				u.second->write(msgNative);
-		}catch(...){}
+		}catch(...){
+			removeUser(u.first);	
+		}
 	}
 }

@@ -65,14 +65,7 @@ class NativeClient{
 			}
 			return false;
 		}
-		inline void Quiting(user & u){
-			for(auto it = std::cbegin(users_r);it!=users_r.cend();it++)
-			if(*it == u){
-				ChatFuncs::quit(*it, rooms_r);
-				users_r.erase(it);
-				break;
-			}
-		}
+
 		virtual bool User( ClientFuncContext ) noexcept;
 		virtual bool Register( ClientFuncContext ) noexcept;
 		virtual bool Privmsg ( ClientFuncContext ) noexcept;
@@ -97,6 +90,16 @@ class NativeClient{
 		decltype(auto) find_user(std::string name){
 			for(auto & user : users_r){
 				if(user.getName() == name) return (user);
+			}
+		}
+	public:
+		inline void Quiting(user & u){
+			std::cout << "quiting " << u.getName() << std::endl;
+			for(auto it = std::cbegin(users_r);it!=users_r.cend();it++)
+			if(*it == u){
+				ChatFuncs::quit(*it, rooms_r);
+				users_r.erase(it);
+				break;
 			}
 		}
 	public:

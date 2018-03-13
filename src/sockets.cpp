@@ -34,9 +34,9 @@ namespace Sockets{
 		do{
 			bzero(buf, sizebuf);
 			n = read(fd, buf, sizebuf);
-			if(buf[0] == 0) throw( std::runtime_error("closed connection") );
+			if(buf[0] == 0 || !n) throw( std::runtime_error("closed connection") );
 			ret.append(buf);
-			
+
 		}while( n == sizebuf && ret.size() < max_size );
 		return ret;
 	}

@@ -65,10 +65,9 @@ bool NativeClient::Privmsg ( ClientFuncContext ) noexcept{
 	if(!logined) return false;
 	if( stream.size() < 3 ) return false;
 	std::ostringstream msgs;
-	for(auto it = std::cbegin(stream)+2;it!=stream.cend();it++){
-			std::cout << "add " << *it;
+	for(auto it = std::cbegin(stream)+2;it!=stream.cend();it++)
 			msgs << " "<< *it;
-	}
+
 	
 	if(stream[1].c_str()[0] != '@' ){
 		for(auto usr : users_r)
@@ -78,6 +77,7 @@ bool NativeClient::Privmsg ( ClientFuncContext ) noexcept{
 					ChatFuncs::writeMessage( u , usr, msgs.str() );
 					return true;
 				}catch(std::runtime_error & e){
+					Quiting(usr);
 					u.write(std::string(":ERROR ") + e.what());
 				}
 
@@ -181,13 +181,19 @@ bool NativeClient::try_connect(int fd, std::string msg){
 				command_container contain={msg,u};
 
 				if(  !Command(contain) || this->error_cmd > max_error_cmd){
-					 if(this->error_cmd > max_error_cmd) 
+					 if(this->error_cmd > max_error_cmd) {
+						Quiting(u);
 						return false;
+					 }
 					 this->error_cmd++;
 				}else this->error_cmd=0;
 			}
 
-			msg = Sockets::read_sock(fd);
+			try{
+				msg = Sockets::read_sock(fd);
+			}catch(...){
+				break;
+			}
 		}while( logined );
 		Quiting(u);
 }

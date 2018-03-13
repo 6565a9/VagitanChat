@@ -22,7 +22,7 @@ namespace ChatFuncs{
 
 	static void quit(user who, std::vector<room> & rooms){
 		try{
-			for(auto r : rooms)
+			for(auto & r : rooms)
 				if(r.userExists(who.getName())){
 					r.removeUser( std::move( who.getName() ) );
 					//TODO: IRC PROTOCOL
