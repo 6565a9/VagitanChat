@@ -11,14 +11,15 @@ void Server::client_thread(int fd){
 		std::string msg = Sockets::read_sock(fd);
 
 
-           		NativeClient nc(rooms,users);
+           	NativeClient nc(rooms,users);
 		nc.try_connect(fd, msg);
 
 		//TODO:...
-		if(!nc.getLogined() && nc.error_cmd < max_error_cmd){
+/*		if(!nc.getLogined() && nc.error_cmd < max_error_cmd){
            			IRCClient IRCc(rooms,users);
                         	IRCc.try_connect(fd,msg);
 		}
+*/
             }catch(...){}
 
 		close(fd);

@@ -18,6 +18,7 @@ class room : public user{
 		std::map<std::string, user*> users;
 		std::string name;
 	public:
+		std::string list(void) noexcept;
 		std::string & getName(void) noexcept{
 			return name;
 		}

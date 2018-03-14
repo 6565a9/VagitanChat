@@ -32,6 +32,13 @@ bool room::removeUser(std::string name) noexcept{
 	return false;
 }
 
+std::string room::list(void) noexcept{
+	std::string tmp;
+	for(auto it = users.cbegin();it!=users.cend();it++)
+		tmp.append(it->first+" ");
+	return tmp;
+}
+
 bool room::userExists(std::string name) noexcept{
 	for(auto it = users.cbegin();it!=users.cend();it++){
 		//std::cout << it->first <<"!="<<name<<std::endl;

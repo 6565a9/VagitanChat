@@ -11,16 +11,16 @@ bool NativeClient::User(ClientFuncContext) noexcept{
 		if(!u.is_exists()){
 			u.write(":ERROR not registered");
 			return false;
-				
 		}
 		u.get_pass_from_file();
 		crypto::sha256(stream[2],stream[1]);
 		//std::string pass = crypto::sha256(std::move(stream[2]), stream[1]);
 		if(!u.checkpass(stream[2])){
+			//std::cerr << "Uncorrect password of " << stream[1] << ":" << stream[2] << std::endl;
 			u.write(":ERROR uncorrect password");
-			return false;			
+			return false;
 		}
-		
+
 		for(auto it = std::cbegin(users_r);it!=users_r.cend();it++)
 			if(*it == u){
 				u.write(":ERROR nickname busy");
@@ -198,6 +198,17 @@ bool NativeClient::try_connect(int fd, std::string msg){
 		Quiting(u);
 }
 
+bool NativeClient::List( ClientFuncContext ) noexcept{
+		if(!logined) return false;
+                if( NotEnought(2, stream.size(), u ) ) return false;
+		for(auto room : rooms_r)
+                    if(room.getName() == stream[1]){
+				u.write( ":LIST "+room.getName()+" "+room.list() );
+				return true;
+		    }
+		u.write(":ERROR ROOM NOT FOUND");
+}
+
 bool NativeClient::Command(command_container & contain){
 		std::cout << "Native FUNC: " << contain.text << std::endl;
 		return Commands::Command(this, functions_client, contain); // TODO:
@@ -223,6 +234,6 @@ NativeClient::NativeClient(std::vector<room> & room, std::vector<user> & user):
 
 			//
 			functions_client[NativeClient_JoinToRoomCMD] = &NativeClient::JoinToRoom;
-			
+			functions_client[NativeClient_List] = &NativeClient::List;
 			functions_client[NativeClient_LeaveFromRoomCMD] = &NativeClient::LeaveFromRoom;
 }

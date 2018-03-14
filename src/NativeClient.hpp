@@ -14,6 +14,7 @@ constexpr const char NativeClient_JoinToRoomCMD[] = ":JOIN";
 constexpr const char NativeClient_LeaveFromRoomCMD[] = ":LEAVE";
 constexpr const char NativeClient_PingCMD[] = ":PING";
 constexpr const char NativeClient_Quit[] = ":QUIT";
+constexpr const char NativeClient_List[] = ":LIST";
 
 constexpr char max_error_cmd = 3;
 
@@ -73,10 +74,13 @@ class NativeClient{
 		virtual bool LeaveFromRoom( ClientFuncContext ) noexcept;
 		virtual bool Ping( ClientFuncContext ) noexcept;
 		virtual bool Quit( ClientFuncContext ) noexcept;
+		virtual bool List( ClientFuncContext ) noexcept;
 	protected:
 		//template <typename Obj>  bool Command(command_container & contain, Obj obj);	
 		//template <typename Obj>  type_command typeOfCommand(std::string command, Obj obj);
 		bool funcExists(std::string);
+	private:
+		
 	private:
 		using fnm = std::map<std::string, ClientFunc >;
 		 fnm  functions_client;
