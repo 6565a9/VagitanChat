@@ -1,0 +1,3 @@
+[submodule "VagitanChat_Client"]
+	path = VagitanChat_Client
+	url = git@github.com:6565a9/VagitanChat_Client.git
