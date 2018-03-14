@@ -1,4 +1,4 @@
-AC_INIT([VagitanChat], [0.1], [])
+AC_INIT([VagitanChat], [0.1], [dalbaeb228@mail.i2p])
 AC_PROG_CC([g++])
 AC_PROG_CXX([g++])
 AC_CONFIG_FILES([
