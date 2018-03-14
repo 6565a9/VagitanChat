@@ -133,3 +133,10 @@ Client->:LIST test
 Server<-:LIST test Client Login 
 
 ```
+
+## Installing
+```
+  mkdir ~/VagitanServ
+  ./configure && make
+  mv src/VagitanChatServer ~/VagitanServ
+```
