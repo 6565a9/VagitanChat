@@ -17,7 +17,7 @@ constexpr const char NativeClient_Quit[] = ":QUIT";
 constexpr const char NativeClient_List[] = ":LIST";
 
 constexpr char max_error_cmd = 3;
-
+constexpr auto nForFullRegister = std::chrono::minutes(10);
 
 
 struct command_container{
@@ -103,6 +103,14 @@ class NativeClient{
 			if(*it == u){
 				ChatFuncs::quit(*it, rooms_r);
 				users_r.erase(it);
+				//std::chrono::time_point<std::chrono::system_clock> 
+				//auto now = std::chrono::system_clock::now();
+				auto duration = std::chrono::duration_cast<std::chrono::minutes>(std::chrono::steady_clock::now()-u.getRegTime() ).count();
+
+				std::cout << duration << ":" << nForFullRegister.count() << std::endl;
+				if( !u.isRegistered() && duration < nForFullRegister.count() )
+					u.deleteF();
+
 				break;
 			}
 		}

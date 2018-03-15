@@ -38,7 +38,7 @@ namespace Text{
                                     deleteChar((char *)text.c_str());
                                     std::vector<std::string> strings;
                                     std::istringstream msg(text);
-                                    std::string tmp;		
+                                    std::string tmp;
                                     while (getline(msg, tmp, dim)) {
                                     	strings.push_back(tmp);
                                     }

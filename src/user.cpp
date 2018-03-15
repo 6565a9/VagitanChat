@@ -21,6 +21,10 @@ bool user::user_exists(std::string name, std::string path) noexcept{
 	return exists;
 }
 
+void user::deleteF(std::string path){
+	std::remove( (path+name+".pas").c_str() );
+}
+
 void user::reg(std::string name, std::string password, std::string path){
 	this->name=name;
 
@@ -42,6 +46,7 @@ void user::reg(std::string name, std::string password, std::string path){
 	
 	try{
 		this->write(":REGISTERED");
+		reg_time=std::chrono::steady_clock::now();
 	}catch(std::runtime_error & e){throw(e);}
 	//...
 }
@@ -69,6 +74,8 @@ void user::init_user(void){
 	}catch( std::runtime_error & e){
 		throw(e);
 	}
+	entering_time=std::chrono::steady_clock::now();
+	registered=true;
 }
 
 user::user(std::string && name, int && fd, bool isIRCUser) : name(name), fd(fd), isIRCUser(isIRCUser){
